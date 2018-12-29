@@ -135,7 +135,7 @@
   /**
    * Checks whether the given parameter value represents file-like content.
    * @param param The parameter to check.
-   * @returns {Boolean} <code>true</code> if <code>param</code> represents a file. 
+   * @returns {Boolean} <code>true</code> if <code>param</code> represents a file.
    */
   exports.prototype.isFileParam = function(param) {
     // fs.ReadStream in Node.js (but not in runtime like browserify)
@@ -187,7 +187,7 @@
 
   /**
    * Enumeration of collection format separator strategies.
-   * @enum {String} 
+   * @enum {String}
    * @readonly
    */
   exports.CollectionFormatEnum = {
@@ -418,54 +418,58 @@
    * @returns An instance of the specified type.
    */
   exports.convertToType = function(data, type) {
-    switch (type) {
-      case 'Boolean':
-        return Boolean(data);
-      case 'Integer':
-        return parseInt(data, 10);
-      case 'Number':
-        return parseFloat(data);
-      case 'String':
-        return String(data);
-      case 'Date':
-        return this.parseDate(String(data));
-      default:
-        if (type === Object) {
-          // generic object, return directly
-          return data;
-        } else if (typeof type === 'function') {
-          // for model type like: User
-          return type.constructFromObject(data);
-        } else if (Array.isArray(type)) {
-          // for array type like: ['String']
-          var itemType = type[0];
-          return data.map(function(item) {
-            return exports.convertToType(item, itemType);
-          });
-        } else if (typeof type === 'object') {
-          // for plain object type like: {'String': 'Integer'}
-          var keyType, valueType;
-          for (var k in type) {
-            if (type.hasOwnProperty(k)) {
-              keyType = k;
-              valueType = type[k];
-              break;
+    if (data) {
+      switch (type) {
+        case 'Boolean':
+          return Boolean(data);
+        case 'Integer':
+          return parseInt(data, 10);
+        case 'Number':
+          return parseFloat(data);
+        case 'String':
+          return String(data);
+        case 'Date':
+          return this.parseDate(String(data));
+        default:
+          if (type === Object) {
+            // generic object, return directly
+            return data;
+          } else if (typeof type === 'function') {
+            // for model type like: User
+            return type.constructFromObject(data);
+          } else if (Array.isArray(type)) {
+            // for array type like: ['String']
+            var itemType = type[0];
+            return data.map(function(item) {
+              return exports.convertToType(item, itemType);
+            });
+          } else if (typeof type === 'object') {
+            // for plain object type like: {'String': 'Integer'}
+            var keyType, valueType;
+            for (var k in type) {
+              if (type.hasOwnProperty(k)) {
+                keyType = k;
+                valueType = type[k];
+                break;
+              }
             }
-          }
-          var result = {};
-          for (var k in data) {
-            if (data.hasOwnProperty(k)) {
-              var key = exports.convertToType(k, keyType);
-              var value = exports.convertToType(data[k], valueType);
-              result[key] = value;
+            var result = {};
+            for (var k in data) {
+              if (data.hasOwnProperty(k)) {
+                var key = exports.convertToType(k, keyType);
+                var value = exports.convertToType(data[k], valueType);
+                result[key] = value;
+              }
             }
+            return result;
+          } else {
+            // for unknown type, return the data directly
+            return data;
           }
-          return result;
-        } else {
-          // for unknown type, return the data directly
-          return data;
-        }
+      }
     }
+
+    return data;
   };
 
   /**
