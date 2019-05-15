@@ -12,7 +12,7 @@
     }
     root.LookerApi30Reference.ApiClient = factory(root.superagent);
   }
-}(this, function(superagent) {
+})(this, function(superagent) {
   'use strict';
 
   /**
@@ -28,21 +28,22 @@
    * @class
    */
   var exports = function() {
-
     /**
      * The base URL against which to resolve every API call's (relative) path.
      * @type {String}
      * @default https://instance_name.looker.com:19999/api/3.0
      */
-    this._basePath = 'https://INSTANCE_NAME.looker.com:19999/api/3.0'.replace(/\/+$/, '');
-    this.basePath =  this._basePath;
+    this._basePath = 'https://INSTANCE_NAME.looker.com:19999/api/3.0'.replace(
+      /\/+$/,
+      ''
+    );
+    this.basePath = this._basePath;
 
     /**
      * The authentication methods to be included for all API calls.
      * @type {Array.<String>}
      */
-    this.authentications = {
-    };
+    this.authentications = {};
 
     /**
      * The default HTTP headers to be included for all API calls.
@@ -56,12 +57,12 @@
      * @type {Number}
      * @default 60000
      */
-    this.timeout = 60000;
+    this.timeout = 120000;
   };
 
   exports.prototype.setInstanceName = function(name) {
-    this.basePath = this._basePath.replace('INSTANCE_NAME',name);
-  }
+    this.basePath = this._basePath.replace('INSTANCE_NAME', name);
+  };
 
   /**
    * Returns a string representation for an actual parameter.
@@ -115,7 +116,9 @@
    * @returns {Boolean} <code>true</code> if <code>contentType</code> represents JSON, otherwise <code>false</code>.
    */
   exports.prototype.isJsonMime = function(contentType) {
-    return Boolean(contentType != null && contentType.match(/^application\/json(;.*)?$/i));
+    return Boolean(
+      contentType != null && contentType.match(/^application\/json(;.*)?$/i)
+    );
   };
 
   /**
@@ -139,10 +142,12 @@
    */
   exports.prototype.isFileParam = function(param) {
     // fs.ReadStream in Node.js (but not in runtime like browserify)
-    if (typeof window === 'undefined' &&
-        typeof require === 'function' &&
-        require('fs') &&
-        param instanceof require('fs').ReadStream) {
+    if (
+      typeof window === 'undefined' &&
+      typeof require === 'function' &&
+      require('fs') &&
+      param instanceof require('fs').ReadStream
+    ) {
       return true;
     }
     // Buffer in Node.js
@@ -173,7 +178,11 @@
   exports.prototype.normalizeParams = function(params) {
     var newParams = {};
     for (var key in params) {
-      if (params.hasOwnProperty(key) && params[key] != undefined && params[key] != null) {
+      if (
+        params.hasOwnProperty(key) &&
+        params[key] != undefined &&
+        params[key] != null
+      ) {
         var value = params[key];
         if (this.isFileParam(value) || Array.isArray(value)) {
           newParams[key] = value;
@@ -225,7 +234,10 @@
    * @returns {String|Array} A string representation of the supplied collection, using the specified delimiter. Returns
    * <code>param</code> as is if <code>collectionFormat</code> is <code>multi</code>.
    */
-  exports.prototype.buildCollectionParam = function buildCollectionParam(param, collectionFormat) {
+  exports.prototype.buildCollectionParam = function buildCollectionParam(
+    param,
+    collectionFormat
+  ) {
     if (param == null) {
       return null;
     }
@@ -278,7 +290,7 @@
           break;
         case 'oauth2':
           if (auth.accessToken) {
-            request.set({'Authorization': 'Bearer ' + auth.accessToken});
+            request.set({ Authorization: 'Bearer ' + auth.accessToken });
           }
           break;
         default:
@@ -335,10 +347,20 @@
    * @param {module:ApiClient~callApiCallback} callback The callback function.
    * @returns {Object} The SuperAgent request object.
    */
-  exports.prototype.callApi = function callApi(path, httpMethod, pathParams,
-      queryParams, headerParams, formParams, bodyParam, authNames, contentTypes, accepts,
-      returnType, callback) {
-
+  exports.prototype.callApi = function callApi(
+    path,
+    httpMethod,
+    pathParams,
+    queryParams,
+    headerParams,
+    formParams,
+    bodyParam,
+    authNames,
+    contentTypes,
+    accepts,
+    returnType,
+    callback
+  ) {
     var _this = this;
     var url = this.buildUrl(path, pathParams);
     var request = superagent(httpMethod, url);
@@ -384,7 +406,6 @@
     if (accept) {
       request.accept(accept);
     }
-
 
     request.end(function(error, response) {
       if (callback) {
@@ -479,4 +500,4 @@
   exports.instance = new exports();
 
   return exports;
-}));
+});
